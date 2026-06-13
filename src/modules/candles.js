@@ -82,47 +82,78 @@ export function mountCandles(root, ctx) {
     if (litCandles().length) extinguishOne();
   });
 
+  // tapping the cake itself also puffs out a candle (always works)
+  cakeWrap.addEventListener('click', () => {
+    if (done) return;
+    cakeWrap.style.setProperty('--wind', '0.7');
+    setTimeout(() => cakeWrap.style.setProperty('--wind', '0'), 240);
+    extinguishOne();
+  });
+
   /* ── MIC mode ──────────────────────────────────────────── */
   micBtn.addEventListener('click', startMic);
 
   async function startMic() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status.textContent = 'This browser won’t allow mic access — just tap to blow 💨';
+      return;
+    }
     status.textContent = 'asking for your microphone…';
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+      });
     } catch (err) {
-      status.textContent = 'No mic access — no worries, just tap to blow! 💨';
+      const blocked = err && (err.name === 'NotAllowedError' || err.name === 'SecurityError');
+      status.textContent = blocked
+        ? 'Mic is blocked — tap the 🔒 in the address bar to allow it, or just tap to blow 💨'
+        : 'Couldn’t reach your mic — no worries, just tap to blow 💨';
       meter.hidden = true;
       return;
     }
     micBtn.disabled = true;
     meter.hidden = false;
-    status.textContent = 'Take a deep breath… and bloooow! 🌬️';
+    status.textContent = 'Calibrating… one sec ✨';
 
     const AC = window.AudioContext || window.webkitAudioContext;
     audioCtx = new AC();
-    if (audioCtx.state === 'suspended') await audioCtx.resume();
+    try { if (audioCtx.state === 'suspended') await audioCtx.resume(); } catch (_) {}
     const srcNode = audioCtx.createMediaStreamSource(stream);
     const analyser = audioCtx.createAnalyser();
     analyser.fftSize = 1024;
     srcNode.connect(analyser);
     const buf = new Uint8Array(analyser.fftSize);
 
-    const THRESH = 0.10;     // volume needed to count as "blowing"
-    let lastPuff = 0;
-
-    const loop = () => {
+    const readVol = () => {
       analyser.getByteTimeDomainData(buf);
       let sum = 0;
       for (let i = 0; i < buf.length; i++) { const d = (buf[i] - 128) / 128; sum += d * d; }
-      const vol = Math.sqrt(sum / buf.length);            // RMS, ~0..1
+      return Math.sqrt(sum / buf.length);              // RMS, ~0..1
+    };
 
-      const wind = Math.min(1, vol * 5);
-      cakeWrap.style.setProperty('--wind', wind.toFixed(2));
-      meterFill.style.width = Math.min(100, vol * 320) + '%';
+    // listen to the room for ~450ms, then set the "blow" threshold above it
+    let baseline = 0, lastPuff = 0, told = false;
+    const calibrateUntil = performance.now() + 450;
 
+    const loop = () => {
+      const vol = readVol();
       const now = performance.now();
-      if (vol > THRESH && now - lastPuff > 280) {
+
+      if (now < calibrateUntil) {
+        baseline = Math.max(baseline, vol);
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      if (!told) { told = true; status.textContent = 'Take a deep breath… and blow! 🌬️'; }
+
+      const thresh = Math.max(0.045, baseline * 2.2);
+      const norm = (vol - baseline) / (thresh - baseline + 1e-6);
+      cakeWrap.style.setProperty('--wind', Math.min(1, vol * 7).toFixed(2));
+      meterFill.style.width = Math.max(0, Math.min(100, norm * 70)) + '%';
+
+      if (vol > thresh && now - lastPuff > 230) {
         lastPuff = now;
+        status.textContent = 'I can hear you — keep going! 🌬️';
         extinguishOne();
       }
       raf = requestAnimationFrame(loop);
