@@ -52,7 +52,7 @@ export const loves = [
   'The amount of talking you do despite me telling you to shut up.',                                   // 3
   'That you let me see every version of you.',                                                         // 4  (placeholder — send me #4)
   'How hard you work, and how proud it makes me.',                                                     // 5  (placeholder — send me #5)
-  "Also one of the things I hate about you the most, but I adjust :'(",                                 // 6
+  "How you have your two cents to give in every conversation. Also one of the things I hate about you the most, but I adjust :'(", // 6
   'How big of a foodie you are — having a meal with you is always going to be my favourite thing to do with you!', // 7
   'How you try so hard to be funny but are only half as funny as me :P',                               // 8
   'The way you believe in me louder than I believe in myself.',                                        // 9  (placeholder — send me #9)
