@@ -1,0 +1,281 @@
+/* ============================================================
+   Blush — design system
+   White background · black text · everything in shades of pink.
+   Elegant: Fraunces (display) + DM Sans (body) + Pinyon (script).
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Pinyon+Script&display=swap');
+
+:root {
+  /* surfaces */
+  --bg:        #ffffff;
+  --bg-tint:   #fff6fa;
+  --bg-tint-2: #ffeef6;
+
+  /* ink (black, with the faintest warmth) */
+  --ink:      #1a1016;
+  --ink-soft: #574750;
+  --ink-dim:  #9a8a92;
+
+  /* pinks — the whole palette is pink */
+  --pink:        #ff7ab0;
+  --pink-bright: #ff5fa2;
+  --pink-deep:   #e23d86;
+  --pink-deeper: #c81e6e;
+  --pink-soft:   #ffc2dd;
+  --pink-light:  #ffe1ee;
+  --pink-pastel: #ffd6e8;
+  --blush:       #fff0f6;
+
+  --glow: rgba(255, 122, 176, 0.40);
+
+  /* cards */
+  --card:        #ffffff;
+  --card-tint:   #fff5fa;
+  --card-border: rgba(226, 61, 134, 0.18);
+  --card-ink:    #1a1016;
+  --card-dim:    #8a6c79;
+
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-script:  'Pinyon Script', 'Brush Script MT', cursive;
+  --font-body:    'DM Sans', system-ui, -apple-system, sans-serif;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --maxw: 1040px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Hard rule: the whole app is ONE screen, never scrolls ── */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--bg);
+  height: 100vh;
+  height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Ambient background (soft pink wash on white) ─────────── */
+#ambiance {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% -15%, var(--bg-tint-2) 0%, transparent 55%),
+    radial-gradient(90% 70% at 50% 115%, var(--blush) 0%, transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, var(--bg-tint) 100%);
+}
+#ambiance::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 40%;
+  width: 70vmax; height: 70vmax;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, var(--glow) 0%, transparent 60%);
+  opacity: 0.18;
+  animation: breathe 7s var(--ease) infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.12; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 0.22; transform: translate(-50%, -50%) scale(1.06); }
+}
+
+/* ── Floating pink balloons (populated by JS) ─────────────── */
+#balloons { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.balloon {
+  position: absolute;
+  bottom: -160px;
+  width: var(--size, 42px);
+  height: calc(var(--size, 42px) * 1.22);
+  border-radius: 50% 50% 49% 49% / 47% 47% 53% 53%;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 26%),
+    radial-gradient(circle at 50% 40%, var(--c, #ff7ab0) 0%, var(--c, #ff7ab0) 55%, rgba(0,0,0,0.12) 130%);
+  box-shadow: inset -4px -7px 12px rgba(160, 30, 80, 0.18);
+  opacity: 0;
+  animation: balloon-rise linear infinite;
+  will-change: transform;
+}
+.balloon::before { /* knot */
+  content: '';
+  position: absolute;
+  left: 50%; bottom: -5px; transform: translateX(-50%);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 7px solid var(--c, #ff7ab0);
+}
+.balloon::after { /* string */
+  content: '';
+  position: absolute;
+  left: 50%; top: 100%;
+  width: 1px; height: 46px;
+  background: linear-gradient(var(--c, #ff7ab0), rgba(255,255,255,0));
+  transform-origin: top center;
+}
+@keyframes balloon-rise {
+  0%   { transform: translateY(0) translateX(0) rotate(-7deg); opacity: 0; }
+  8%   { opacity: 0.85; }
+  50%  { transform: translateY(-58vh) translateX(var(--sway, 24px)) rotate(7deg); }
+  92%  { opacity: 0.8; }
+  100% { transform: translateY(-122vh) translateX(calc(var(--sway, 24px) * -1)) rotate(-7deg); opacity: 0; }
+}
+
+/* ── App stage — locked to one viewport, never scrolls ────── */
+#app { position: relative; z-index: 2; height: 100vh; height: 100dvh; }
+.stage {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(3.5rem, 8vh, 4.5rem) clamp(1rem, 4vw, 2.5rem) clamp(1rem, 4vh, 2rem);
+}
+
+/* scene transitions */
+.scene { width: 100%; animation: sceneIn 0.8s var(--ease) both; }
+@keyframes sceneIn {
+  from { opacity: 0; transform: translateY(22px); filter: blur(5px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+.scene-out { animation: sceneOut 0.5s var(--ease) both; }
+@keyframes sceneOut {
+  to { opacity: 0; transform: translateY(-22px); filter: blur(5px); }
+}
+
+/* ── Typography ───────────────────────────────────────────── */
+.eyebrow {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  font-size: clamp(0.68rem, 1.5vw, 0.82rem);
+  font-weight: 500;
+  color: var(--pink-deep);
+}
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-optical-sizing: auto;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.display-xl { font-size: clamp(2.7rem, 9vw, 6rem); }
+.display-lg { font-size: clamp(2rem, 6vw, 3.6rem); }
+.script-name {
+  font-family: var(--font-script);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--pink-deep);
+  text-shadow: 0 4px 28px rgba(226, 61, 134, 0.22);
+}
+.lede {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(1.05rem, 2.4vw, 1.32rem);
+  color: var(--ink-soft);
+  line-height: 1.65;
+  max-width: 40ch;
+  margin: 0 auto;
+}
+.text-pink { color: var(--pink-deep); }
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  border: none;
+  border-radius: 999px;
+  padding: 0.95rem 2.3rem;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-deep) 100%);
+  box-shadow: 0 10px 26px rgba(226, 61, 134, 0.30), inset 0 1px 0 rgba(255,255,255,0.4);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), filter 0.25s;
+}
+.btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 16px 38px rgba(226, 61, 134, 0.42); filter: brightness(1.03); }
+.btn:active { transform: translateY(0) scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; filter: grayscale(0.2); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--pink-deep);
+  border: 1.5px solid var(--pink-soft);
+  box-shadow: none;
+}
+.btn-ghost:hover { background: var(--blush); color: var(--pink-deeper); border-color: var(--pink); box-shadow: none; }
+
+.btn-row { display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center; align-items: center; }
+
+/* ── Chapter navigation (top) ─────────────────────────────── */
+#chapter-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+  pointer-events: none;
+}
+#chapter-nav.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.chapter-dot {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border);
+  color: var(--ink-dim);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0.42rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.3s, border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.chapter-dot .num {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.chapter-dot:hover { color: var(--pink-deep); border-color: var(--pink-soft); box-shadow: 0 4px 14px rgba(226,61,134,0.12); }
+.chapter-dot.active { color: #fff; background: linear-gradient(135deg, var(--pink), var(--pink-deep)); border-color: transparent; box-shadow: 0 6px 18px rgba(226,61,134,0.30); }
+.chapter-dot.locked { opacity: 0.4; cursor: not-allowed; }
+.chapter-dot .label { display: none; }
+@media (min-width: 720px) { .chapter-dot .label { display: inline; } }
+
+/* helpers */
+.hint {
+  margin-top: 1.6rem;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 0.85; } 50% { opacity: 0.4; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+}

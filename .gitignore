@@ -1,0 +1,21 @@
+# dependencies (none needed, but just in case)
+node_modules/
+
+# local backup of the old site
+.archive/
+
+# editor / IDE
+.claude/
+.vscode/
+.idea/
+
+# os noise
+.DS_Store
+Thumbs.db
+
+# env
+.env
+.env.*
+
+# original dropped photos (only photo1..N.jpg ship)
+photos/incoming/

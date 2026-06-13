@@ -1,0 +1,12 @@
+{
+  "name": "hbd-disha",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An interactive 25th birthday experience for Disha.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

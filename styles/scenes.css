@@ -1,0 +1,456 @@
+/* ============================================================
+   Per-scene styles  (Blush theme — white + pink)
+   ============================================================ */
+
+/* ─────────────────────────────────────────────────────────────
+   MODULE 1 — Blow out the candles
+   ───────────────────────────────────────────────────────────── */
+.candles-scene { gap: clamp(0.5rem, 2vh, 1.2rem); }
+.candles-scene .lede { max-width: 34ch; }
+
+.cake-wrap {
+  position: relative;
+  /* reserve headroom for the candles + flames, which overhang the cake top */
+  padding-top: clamp(62px, 13vh, 104px);
+  margin: 0 0 0.4rem;
+  --wind: 0;
+  transition: filter 1s var(--ease);
+}
+
+/* the cake — scales to the shorter of width/height so it always fits */
+.cake {
+  position: relative;
+  width: clamp(190px, min(56vw, 30vh), 290px);
+  height: clamp(128px, min(38vw, 20vh), 195px);
+  margin: 0 auto;
+  filter: drop-shadow(0 22px 26px rgba(226, 61, 134, 0.20));
+}
+.cake .plate {
+  position: absolute;
+  bottom: -10px; left: 50%; transform: translateX(-50%);
+  width: 116%; height: 26px;
+  background: linear-gradient(180deg, #ffffff, var(--pink-light) 60%, var(--pink-soft));
+  border-radius: 50%;
+  box-shadow: 0 14px 24px rgba(226, 61, 134, 0.18);
+}
+.cake .tier {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  border-radius: 14px 14px 10px 10px;
+  background: linear-gradient(180deg, var(--pink) 0%, var(--pink-deep) 100%);
+  box-shadow: inset 0 -10px 18px rgba(160, 30, 80, 0.22), inset 0 6px 10px rgba(255,255,255,0.25);
+}
+.cake .tier-bottom { bottom: 0; width: 100%; height: 56%; }
+.cake .tier-top    { bottom: 50%; width: 70%; height: 40%; }
+/* frosting (cream/white scallops) */
+.cake .frosting {
+  position: absolute; left: 0; right: 0;
+  height: 22px;
+  background: radial-gradient(12px 16px at 12px 0, #ffffff 60%, transparent 62%) repeat-x;
+  background-size: 24px 22px;
+  filter: drop-shadow(0 3px 2px rgba(226, 61, 134, 0.12));
+}
+.cake .frosting-bottom { bottom: calc(56% - 10px); }
+.cake .frosting-top    { bottom: calc(90% - 10px); width: 70%; left: 50%; transform: translateX(-50%); }
+.cake .sprinkles { position: absolute; inset: 0; }
+.cake .sprinkle {
+  position: absolute; width: 7px; height: 7px; border-radius: 2px;
+  transform: rotate(var(--r, 20deg));
+}
+
+/* candles */
+.candle {
+  position: relative;
+  width: 9px; height: clamp(34px, 9vw, 46px);
+  border-radius: 3px;
+  background: repeating-linear-gradient(45deg, var(--pink-deep) 0 6px, #ffffff 6px 12px);
+  box-shadow: 0 2px 6px rgba(226, 61, 134, 0.25);
+}
+.candle .wick { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 2px; height: 6px; background: #4a2230; }
+
+/* flame — pink, per request */
+.flame {
+  position: absolute;
+  top: -26px; left: 50%;
+  width: 16px; height: 26px;
+  margin-left: -8px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(ellipse at 50% 75%, #fff0f7 0%, #ff9ecb 36%, #ff4f9e 68%, transparent 78%);
+  transform-origin: 50% 90%;
+  animation: flicker 0.16s ease-in-out infinite alternate;
+  box-shadow: 0 -2px 26px 8px rgba(255, 95, 162, 0.55);
+  transition: opacity 0.4s, transform 0.4s;
+  rotate: calc(var(--wind, 0) * 22deg);
+}
+.flame::after { /* soft inner glow base */
+  content: ''; position: absolute; left: 50%; bottom: -2px; width: 7px; height: 9px;
+  margin-left: -3.5px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 210, 230, 0.95), transparent 70%);
+}
+@keyframes flicker {
+  0%   { transform: scaleY(1)    scaleX(1)    skewX(-3deg); }
+  100% { transform: scaleY(1.08) scaleX(0.94) skewX(3deg); }
+}
+
+/* extinguished */
+.candle.out .flame { opacity: 0; transform: scaleY(0.2) translateY(8px); box-shadow: none; }
+.smoke {
+  position: absolute; top: -22px; left: 50%; margin-left: -4px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(180, 150, 165, 0.5);
+  opacity: 0; pointer-events: none;
+}
+.candle.out .smoke { animation: smoke 1.6s ease-out forwards; }
+@keyframes smoke {
+  0%   { opacity: 0.5; transform: translateY(0) scale(0.6); }
+  100% { opacity: 0; transform: translateY(-46px) scale(2.4); filter: blur(4px); }
+}
+
+/* number candles "2" "5" */
+.num-candles {
+  position: absolute; bottom: calc(90% - 4px); left: 50%; transform: translateX(-50%);
+  display: flex; gap: 10px; align-items: flex-end;
+}
+.num-candle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(34px, 11vw, 56px);
+  line-height: 1;
+  background: linear-gradient(180deg, var(--pink) 0%, var(--pink-deeper) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  position: relative;
+  filter: drop-shadow(0 2px 3px rgba(226, 61, 134, 0.3));
+}
+.num-candle .flame { top: -20px; }
+
+/* mic meter */
+.blow-meter {
+  width: min(260px, 70vw); height: 8px; border-radius: 999px;
+  background: var(--pink-light);
+  overflow: hidden; margin: 0.4rem auto 0;
+  border: 1px solid var(--pink-soft);
+}
+.blow-meter .fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--pink-soft), var(--pink), var(--pink-deep));
+  transition: width 0.08s linear;
+}
+.mic-status { font-size: 0.82rem; color: var(--ink-dim); letter-spacing: 0.03em; min-height: 1.2em; }
+
+.cake-wrap.all-out { filter: brightness(0.99) saturate(0.96); }
+
+.wish-reveal { display: grid; gap: 1rem; }
+
+/* ─────────────────────────────────────────────────────────────
+   MODULE 2 — 25 Perfect Memories (photo deck + letter)
+   ───────────────────────────────────────────────────────────── */
+.memories-scene {
+  justify-content: flex-start;
+  gap: clamp(0.4rem, 1.5vh, 0.9rem);
+}
+.mem-title {
+  font-size: clamp(1.3rem, 4.4vw, 2.1rem);
+  color: var(--ink);
+}
+.mem-title::after {
+  content: ''; display: block; width: 54px; height: 2px; margin: 0.5rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--pink), transparent);
+}
+
+.mem-stage {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mem-card-wrap { width: 100%; display: flex; align-items: center; justify-content: center; }
+
+.mem-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: clamp(0.5rem, 1.6vw, 0.85rem);
+  box-shadow: 0 20px 50px rgba(226, 61, 134, 0.18);
+  transform: rotate(var(--tilt, 0deg));
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(86vw, 460px);
+  cursor: pointer;
+}
+.mem-card.in-right { animation: memInRight 0.5s var(--ease) both; }
+.mem-card.in-left  { animation: memInLeft  0.5s var(--ease) both; }
+@keyframes memInRight {
+  from { opacity: 0; transform: translateX(46px) rotate(var(--tilt, 0deg)); }
+  to   { opacity: 1; transform: translateX(0)     rotate(var(--tilt, 0deg)); }
+}
+@keyframes memInLeft {
+  from { opacity: 0; transform: translateX(-46px) rotate(var(--tilt, 0deg)); }
+  to   { opacity: 1; transform: translateX(0)      rotate(var(--tilt, 0deg)); }
+}
+
+.mem-photo {
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--pink-light);
+  display: flex; align-items: center; justify-content: center;
+}
+.mem-photo img {
+  display: block;
+  max-height: 42vh;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+  border-radius: 10px;
+}
+@media (max-height: 680px) { .mem-photo img { max-height: 34vh; } }
+.mem-photo.missing {
+  width: min(72vw, 360px);
+  height: 38vh;
+  position: relative;
+  background: linear-gradient(135deg, var(--pink-light), var(--pink-soft));
+}
+.mem-photo.missing::before {
+  content: '📸  photo ' attr(data-n);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--pink-deep); font-family: var(--font-body); font-size: 0.9rem; letter-spacing: 0.04em;
+}
+
+.mem-cap { text-align: center; padding: 0.1rem 0.3rem 0.2rem; }
+.mem-cap-title {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: italic;
+  color: var(--pink-deep);
+  font-size: clamp(1rem, 3vw, 1.3rem);
+}
+.mem-cap-text {
+  display: block;
+  font-weight: 300;
+  color: var(--ink-soft);
+  font-size: clamp(0.82rem, 2.3vw, 1rem);
+  line-height: 1.42;
+  margin-top: 0.15rem;
+}
+
+.mem-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--card-border);
+  background: #fff;
+  color: var(--pink-deep);
+  font-size: 1.7rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(226, 61, 134, 0.18);
+  transition: transform 0.2s var(--ease), background 0.2s, color 0.2s;
+  z-index: 5;
+}
+.mem-arrow:hover { background: linear-gradient(135deg, var(--pink), var(--pink-deep)); color: #fff; transform: translateY(-50%) scale(1.09); }
+.mem-arrow:disabled { opacity: 0.3; cursor: default; }
+.mem-arrow.is-final { background: linear-gradient(135deg, var(--pink), var(--pink-deep)); color: #fff; font-size: 1.2rem; }
+.mem-prev { left: -8px; }
+.mem-next { right: -8px; }
+@media (min-width: 560px) { .mem-prev { left: -26px; } .mem-next { right: -26px; } }
+
+.mem-foot { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.mem-counter { font-family: var(--font-display); font-weight: 600; color: var(--ink); font-size: clamp(0.95rem, 2.6vw, 1.15rem); }
+.mem-counter .mem-sep { color: var(--pink); margin: 0 0.4rem; }
+.mem-counter #memNum { color: var(--pink-deep); }
+.mem-progress { width: min(280px, 70vw); height: 4px; border-radius: 999px; background: var(--pink-light); overflow: hidden; }
+.mem-progress > i { display: block; height: 100%; width: 4%; background: linear-gradient(90deg, var(--pink), var(--pink-deep)); transition: width 0.4s var(--ease); }
+.mem-hint { font-size: 0.78rem; color: var(--ink-dim); letter-spacing: 0.03em; transition: opacity 0.5s; }
+
+/* ── the letter ───────────────────────────────────────────── */
+.letter-scene { gap: clamp(1.2rem, 3vh, 1.8rem); }
+.letter-paper {
+  position: relative;
+  background: linear-gradient(180deg, #fff 0%, #fff7fb 100%);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: clamp(1.4rem, 4vw, 2.4rem);
+  max-width: min(90vw, 640px);
+  box-shadow: 0 22px 60px rgba(226, 61, 134, 0.18);
+}
+.letter-seal {
+  position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+  font-size: 2.4rem; filter: drop-shadow(0 4px 8px rgba(226, 61, 134, 0.3));
+}
+.letter-h {
+  font-style: italic;
+  font-size: clamp(1.4rem, 4.5vw, 2.1rem);
+  color: var(--pink-deep);
+  text-align: center;
+  margin-bottom: 0.9rem;
+}
+.letter-body {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--ink-soft);
+  text-align: left;
+  font-size: 1.16rem;       /* JS shrinks this to fit the screen */
+  line-height: 1.5;
+}
+.letter-body p { margin-bottom: 0.62em; }
+.letter-body p:last-child {
+  margin-bottom: 0;
+  margin-top: 0.9em;
+  text-align: right;
+  font-style: italic;
+  color: var(--pink-deep);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MODULE 3 — 10 Things I Love About You (flip cards)
+   ───────────────────────────────────────────────────────────── */
+.loves-scene { justify-content: flex-start; gap: clamp(0.5rem, 1.8vh, 1rem); }
+.loves-title { font-size: clamp(1.5rem, 5vw, 2.4rem); color: var(--ink); line-height: 1.06; }
+.loves-title::after {
+  content: ''; display: block; width: 54px; height: 2px; margin: 0.6rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--pink), transparent);
+}
+
+.loves-stage { position: relative; width: 100%; max-width: 520px; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.love-card-wrap { width: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
+.love-card { width: min(82vw, 380px); }
+.love-card.in-right { animation: memInRight 0.5s var(--ease) both; }
+.love-card.in-left  { animation: memInLeft  0.5s var(--ease) both; }
+
+.love-flip {
+  position: relative; width: 100%;
+  height: clamp(244px, 46vh, 380px);
+  transform-style: preserve-3d;
+  transition: transform 0.65s var(--ease);
+  cursor: pointer;
+}
+.love-flip.revealed { transform: rotateY(180deg); }
+.love-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: 22px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 1.4rem; text-align: center;
+}
+.love-front {
+  background: linear-gradient(160deg, #fff, var(--pink-light));
+  border: 1px solid var(--card-border);
+  box-shadow: 0 18px 46px rgba(226, 61, 134, 0.16);
+}
+.love-back {
+  background: linear-gradient(160deg, var(--pink), var(--pink-deep));
+  color: #fff;
+  transform: rotateY(180deg);
+  box-shadow: 0 18px 46px rgba(226, 61, 134, 0.30);
+}
+.love-hash { font-family: var(--font-display); font-style: italic; color: var(--pink-deep); font-size: 1rem; letter-spacing: 0.12em; }
+.love-num-big {
+  font-family: var(--font-display); font-weight: 700; line-height: 1;
+  font-size: clamp(5rem, 22vw, 9rem);
+  background: linear-gradient(180deg, var(--pink), var(--pink-deeper));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.love-prompt { margin-top: 0.6rem; font-size: 0.9rem; color: var(--ink-dim); letter-spacing: 0.04em; animation: pulse 2.2s ease-in-out infinite; }
+.love-back-num { position: absolute; top: 0.7rem; right: 1.1rem; font-family: var(--font-display); font-style: italic; font-size: 1.4rem; opacity: 0.5; }
+.love-text { font-family: var(--font-serif); font-weight: 500; font-size: clamp(1.05rem, 3.4vw, 1.45rem); line-height: 1.36; max-width: 20ch; }
+.mem-arrow.pulse { animation: nudge 1.2s ease-in-out infinite; }
+@keyframes nudge { 0%, 100% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.14); } }
+
+/* ── placeholder scenes (chapters not built yet) ──────────── */
+.placeholder-scene { gap: 1.2rem; }
+.placeholder-card {
+  max-width: 540px;
+  background: var(--card-tint);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: clamp(2rem, 5vw, 3rem);
+  box-shadow: 0 18px 50px rgba(226, 61, 134, 0.10);
+}
+.placeholder-badge {
+  display: inline-block; font-family: var(--font-display); font-weight: 700;
+  font-size: 2.8rem; color: var(--pink-deep);
+}
+
+/* ── 10 Things — closing celebration ──────────────────────── */
+.loves-end-scene { text-align: center; }
+.loves-end { display: grid; gap: 0.5rem; place-items: center; }
+.loves-end-heart {
+  font-size: clamp(2.4rem, 8vw, 3.6rem);
+  color: var(--pink-deep);
+  animation: heartbeat 1.3s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.28); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.28); }
+  70% { transform: scale(1); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LOGIN GATE
+   ───────────────────────────────────────────────────────────── */
+.gate-card {
+  width: min(92vw, 420px);
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: clamp(1.7rem, 5vw, 2.6rem);
+  box-shadow: 0 24px 64px rgba(226, 61, 134, 0.18);
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+}
+.gate-lock {
+  font-size: clamp(2.4rem, 8vw, 3.2rem);
+  animation: heartbeat 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 6px 12px rgba(226, 61, 134, 0.3));
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.22); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.22); }
+  70% { transform: scale(1); }
+}
+.gate-form { width: 100%; display: grid; gap: 0.85rem; margin-top: 1.1rem; }
+.gate-field { display: grid; gap: 0.32rem; text-align: left; }
+.gate-field span {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.16em;
+  font-weight: 600; color: var(--pink-deep);
+}
+.gate-field input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  padding: 0.82rem 1rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--pink-soft);
+  background: var(--blush);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.gate-field input::placeholder { color: var(--ink-dim); }
+.gate-field input:focus {
+  border-color: var(--pink);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 122, 176, 0.18);
+}
+.gate-form .btn { margin-top: 0.4rem; width: 100%; }
+.gate-error { min-height: 1.2em; margin: 0; color: var(--pink-deeper); font-size: 0.85rem; font-weight: 600; }
+.gate-hint { margin-top: 1rem; font-size: 0.78rem; color: var(--ink-dim); letter-spacing: 0.02em; }
+.gate-card.shake { animation: shake 0.4s var(--ease); }
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  30%, 70% { transform: translateX(5px); }
+  50% { transform: translateX(-8px); }
+}
